@@ -269,9 +269,16 @@ macro_rules! if_wasm {
     )*}
 }
 
+macro_rules! if_waos {
+    ($($item:item)*) => {$(
+        #[cfg(target_os = "wasi")]
+        $item
+    )*}
+}
+
 macro_rules! if_hyper {
     ($($item:item)*) => {$(
-        #[cfg(not(all(target_arch = "wasm32", any(target_os = "unknown", target_os = "none"))))]
+        #[cfg(not(any(target_os = "wasi", all(target_arch = "wasm32", any(target_os = "unknown", target_os = "none")))))]
         $item
     )*}
 }
@@ -394,4 +401,14 @@ if_wasm! {
     pub use self::wasm::{Body, Client, ClientBuilder, Request, RequestBuilder, Response};
     #[cfg(feature = "multipart")]
     pub use self::wasm::multipart;
+}
+
+if_waos! {
+    #[cfg(feature = "cookies")]
+    pub mod cookie;
+    pub mod redirect;
+    mod util;
+    mod waos;
+
+    pub use self::waos::{Body, Client, ClientBuilder, Request, RequestBuilder, Response};
 }
