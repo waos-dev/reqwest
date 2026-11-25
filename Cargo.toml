@@ -113,7 +113,16 @@ serde_json = { version = "1.0", optional = true }
 ## multipart
 mime_guess = { version = "2.0", default-features = false, optional = true }
 
+# What the hyper client and the WaOS client share.
+
 [target.'cfg(not(all(target_arch = "wasm32", any(target_os = "unknown", target_os = "none"))))'.dependencies]
+percent-encoding = "2.3"
+
+## cookies
+cookie_crate = { version = "0.18.0", package = "cookie", optional = true }
+cookie_store = { version = "0.22.0", optional = true }
+
+[target.'cfg(not(any(target_os = "wasi", all(target_arch = "wasm32", any(target_os = "unknown", target_os = "none")))))'.dependencies]
 encoding_rs = { version = "0.8", optional = true }
 http-body = "1"
 http-body-util = "0.1.2"
@@ -121,7 +130,6 @@ hyper = { version = "1.1", features = ["http1", "client"] }
 hyper-util = { version = "0.1.12", features = ["http1", "client", "client-legacy", "client-proxy", "tokio"] }
 h2 = { version = "0.4", optional = true }
 log = "0.4.17"
-percent-encoding = "2.3"
 tokio = { version = "1.0", default-features = false, features = ["net", "time"] }
 tower = { version = "0.5.2", default-features = false, features = ["retry", "timeout", "util"] }
 tower-service = "0.3"
@@ -143,10 +151,6 @@ rustls = { version = "0.23.4", optional = true, default-features = false, featur
 tokio-rustls = { version = "0.26", optional = true, default-features = false, features = ["tls12"] }
 rustls-platform-verifier = { version = ">=0.6.0, <0.8.0", optional = true }
 
-## cookies
-cookie_crate = { version = "0.18.0", package = "cookie", optional = true }
-cookie_store = { version = "0.22.0", optional = true }
-
 ## stream
 tokio-util = { version = "0.7.9", default-features = false, features = ["io"], optional = true }
 
@@ -160,7 +164,7 @@ h3-quinn = { version = "0.0.10", optional = true }
 quinn = { version = "0.11.1", default-features = false, features = ["runtime-tokio"], optional = true }
 futures-channel = { version = "0.3", optional = true }
 
-[target.'cfg(not(all(target_arch = "wasm32", any(target_os = "unknown", target_os = "none"))))'.dev-dependencies]
+[target.'cfg(not(any(target_os = "wasi", all(target_arch = "wasm32", any(target_os = "unknown", target_os = "none")))))'.dev-dependencies]
 env_logger = "0.10"
 hyper = { version = "1.1.0", default-features = false, features = ["http1", "http2", "client", "server"] }
 hyper-util = { version = "0.1.12", features = ["http1", "http2", "client", "client-legacy", "server-auto", "server-graceful", "tokio"] }
@@ -171,6 +175,11 @@ zstd_crate = { package = "zstd", version = "0.13" }
 doc-comment = "0.3"
 tokio = { version = "1.0", default-features = false, features = ["macros", "rt-multi-thread"] }
 futures-util = { version = "0.3.28", default-features = false, features = ["std", "alloc"] }
+
+# WaOS: a WASI component, sent through `wasi:http`.
+
+[target.'cfg(target_os = "wasi")'.dependencies]
+wasdk = "0.7.1"
 
 # wasm
 

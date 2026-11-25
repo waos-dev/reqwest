@@ -24,7 +24,7 @@ where
     header
 }
 
-#[cfg(not(all(target_arch = "wasm32", any(target_os = "unknown", target_os = "none"))))]
+#[cfg(not(any(target_os = "wasi", all(target_arch = "wasm32", any(target_os = "unknown", target_os = "none")))))]
 pub(crate) fn fast_random() -> u64 {
     use std::cell::Cell;
     use std::collections::hash_map::RandomState;
@@ -88,9 +88,38 @@ pub(crate) fn add_cookie_header(
     }
 }
 
+/// Check the request URL for a "username:password" type authority, and if
+/// found, remove it from the URL and return it.
+#[cfg(not(all(target_arch = "wasm32", any(target_os = "unknown", target_os = "none"))))]
+pub(crate) fn extract_authority(url: &mut url::Url) -> Option<(String, Option<String>)> {
+    use percent_encoding::percent_decode;
+
+    if url.has_authority() {
+        let username: String = percent_decode(url.username().as_bytes())
+            .decode_utf8()
+            .ok()?
+            .into();
+        let password = url.password().and_then(|pass| {
+            percent_decode(pass.as_bytes())
+                .decode_utf8()
+                .ok()
+                .map(String::from)
+        });
+        if !username.is_empty() || password.is_some() {
+            url.set_username("")
+                .expect("has_authority means set_username shouldn't fail");
+            url.set_password(None)
+                .expect("has_authority means set_password shouldn't fail");
+            return Some((username, password));
+        }
+    }
+
+    None
+}
+
 pub(crate) struct Escape<'a>(&'a [u8]);
 
-#[cfg(not(all(target_arch = "wasm32", any(target_os = "unknown", target_os = "none"))))]
+#[cfg(not(any(target_os = "wasi", all(target_arch = "wasm32", any(target_os = "unknown", target_os = "none")))))]
 impl<'a> Escape<'a> {
     pub(crate) fn new(bytes: &'a [u8]) -> Self {
         Escape(bytes)

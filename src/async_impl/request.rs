@@ -581,33 +581,7 @@ fn fmt_request_fields<'a, 'b>(
         .field("headers", &req.headers)
 }
 
-/// Check the request URL for a "username:password" type authority, and if
-/// found, remove it from the URL and return it.
-pub(crate) fn extract_authority(url: &mut Url) -> Option<(String, Option<String>)> {
-    use percent_encoding::percent_decode;
-
-    if url.has_authority() {
-        let username: String = percent_decode(url.username().as_bytes())
-            .decode_utf8()
-            .ok()?
-            .into();
-        let password = url.password().and_then(|pass| {
-            percent_decode(pass.as_bytes())
-                .decode_utf8()
-                .ok()
-                .map(String::from)
-        });
-        if !username.is_empty() || password.is_some() {
-            url.set_username("")
-                .expect("has_authority means set_username shouldn't fail");
-            url.set_password(None)
-                .expect("has_authority means set_password shouldn't fail");
-            return Some((username, password));
-        }
-    }
-
-    None
-}
+pub(crate) use crate::util::extract_authority;
 
 impl<T> TryFrom<HttpRequest<T>> for Request
 where
