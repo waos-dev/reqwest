@@ -9,7 +9,7 @@ This fork adds a client for WaOS to reqwest 0.13.5: in a WaOS app (a WASI compon
 reqwest = { git = "https://github.com/waos-dev/reqwest", branch = "waos" }
 ```
 
-The fork asks for the published `wasdk` (0.7.1). An app that takes `wasdk` from WaOS's repository names it in the same `[patch.crates-io]`, so the fork builds with that one too.
+The fork asks for the published `wasdk` (0.8.0). An app that takes `wasdk` from WaOS's repository names it in the same `[patch.crates-io]`, so the fork builds with that one too.
 
 An app's features stay as they are: those that configure the hyper client (`http2`, `rustls`, `native-tls`, `system-proxy`, `socks`, `charset`, `gzip` and the like) build and do nothing on WaOS.
 
