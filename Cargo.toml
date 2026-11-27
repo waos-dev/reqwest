@@ -179,7 +179,7 @@ futures-util = { version = "0.3.28", default-features = false, features = ["std"
 # WaOS: a WASI component, sent through `wasi:http`.
 
 [target.'cfg(target_os = "wasi")'.dependencies]
-wasdk = "0.7.1"
+wasdk = "0.8.0"
 
 # wasm
 
